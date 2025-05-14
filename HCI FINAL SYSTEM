@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shoe Store</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <style>
+        body {
+            padding-top: 70px;
+            background-image: url('https://assets.onecompiler.app/43ekegrer/43ekegea3/Nike-Logo-1971-present.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .card-img-top { height: 200px; object-fit: cover; }
+        .hide { display: none; }
+        .bg-white-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .quantity-container {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-row td {
+            vertical-align: middle;
+        }
+        #receipt-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        #receipt-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        #receipt-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        #receipt-items th, #receipt-items td {
+            border-bottom: 1px solid #eee;
+            padding: 8px;
+            text-align: left;
+        }
+        #receipt-total {
+            text-align: right;
+            font-weight: bold;
+        }
+        #home .btn {
+            margin: 5px; /* Add some margin between buttons */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top hide" id="main-navbar">
+        <a class="navbar-brand" href="#home">ShoeStore</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#products">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cart">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="#checkout">Checkout</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container my-5 bg-white-container" id="login">
+        <h2 class="text-center mb-4">Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="login-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <p class="mt-3">Don't have an account? <a href="#signup" class="signup-link">Sign up here</a></p>
+        </form>
+    </div>
+
+    <div class="container my-5 hide bg-white-container" id="signup">
+        <h2 class="text-center mb-4">Sign Up</h2>
+        <form id="signup-form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" id="signup-name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="signup-email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="signup-password" required>
+            </div>
+            <button type="submit" class="btn btn-success">Sign Up</button>
+            <p class="mt-3">Already have an account? <a href="#login" class="login-link">Log in here</a></p>
+        </form>
+    </div>
+
+    <div class="container text-center hide bg-white-container" id="home">
+        <h1>Welcome to the Best Shoe Store!</h1>
+        <p>Explore our stylish and comfortable shoe collection.</p>
+        <div class="d-flex justify-content-center">
+            <a href="#products" class="btn btn-primary">Shop Now</a>
+            <button class="btn btn-secondary" onclick="showPage('login')">Back to Login</button>
+        </div>
+    </div>
+
+    <div class="container my-5 hide bg-white-container" id="products">
+        <h2 class="text-center mb-4">Nike Shoes</h2>
+        <div class="row" id="product-list"></div>
+    </div>
+
+    <div class="container my-5 hide bg-white-container" id="cart">
+        <h2 class="text-center mb-4">Your Shopping Cart</h2>
+        <table class="table">
+            <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
+            <tbody id="cart-items"></tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <h4 class="text-right">Total: $<span id="total">0.00</span></h4>
+            <div>
+                <button class="btn btn-danger mr-2" onclick="clearCart()">Clear Cart</button>
+                <button class="btn btn-success" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5 hide bg-white-container" id="checkout">
+        <h2 class="text-center mb-4">Checkout</h2>
+        <form id="checkout-form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" id="checkout-name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="checkout-email" required>
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" class="form-control" id="checkout-address" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+        <div id="receipt-container" class="hide">
+            <h3 id="receipt-header">Order Receipt</h3>
+            <table id="receipt-items">
+                <thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead>
+                <tbody id="receipt-body"></tbody>
+            </table>
+            <p id="receipt-total"></p>
+            <button class="btn btn-info" onclick="showPage('home')">Back to Home</button>
+        </div>
+    </div>
+
+    <div class="container my-5 hide bg-white-container" id="contact">
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <form id="contact-form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-info">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: 'Nike Air Max', price: 120, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/W+NIKE+REACTX+PEGASUS+TRAIL+5.avif' },
+            { id: 2, name: 'Nike Revolution', price: 80, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/NIKE+REVOLUTION+7+(GS).avif' },
+            { id: 3, name: 'Nike ZoomX', price: 150, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/nike-zoomx.avif' },
+            { id: 4, name: 'Nike Pegasus 40', price: 130, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/jd_649722_a.jpg' },
+            { id: 5, name: 'Nike Infinity RN 4', price: 160, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/NIKE+REACT+INFINITY+RUN+FK+3.avif' },
+            { id: 6, name: 'Nike Air Force 1', price: 110, image: 'https://assets.onecompiler.app/43ekegrer/43ekegea3/AIR+FORCE+1+\'07.avif' }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function showPage(id) {
+            document.querySelectorAll('.container').forEach(div => div.classList.add('hide'));
+            document.getElementById(id).classList.remove('hide');
+            // When showing the checkout page, regenerate the receipt
+            if (id === 'checkout') {
+                generateReceipt();
+                 // Also ensure the form is visible and receipt is hidden initially
+                document.getElementById('checkout-form').classList.remove('hide');
+                document.getElementById('receipt-container').classList.add('hide');
+            }
+             // When showing the cart, render the cart
+            if (id === 'cart') {
+                 renderCart();
+            }
+             // When showing products, render products
+            if (id === 'products') {
+                 renderProducts();
+            }
+        }
+
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = '';
+            products.forEach(product => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4';
+                col.innerHTML = `
+                    <div class="card">
+                        <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">$${product.price.toFixed(2)}</p>
+                            <div class="quantity-container">
+                                <input type="number" id="qty-${product.id}" class="form-control" min="1" value="1" style="width: 60px; margin-right: 10px;">
+                                <button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>`;
+                list.appendChild(col);
+            });
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cart-items');
+            tbody.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                const product = products.find(p => p.id === item.id);
+                if (product) { // Check if product exists (safety)
+                     const subtotal = product.price * item.qty;
+                     total += subtotal;
+                     tbody.innerHTML += `
+                         <tr class="cart-item-row">
+                             <td>${product.name}</td>
+                             <td>
+                                 <div class="quantity-container">
+                                     <input type="number" id="cart-qty-${index}" class="form-control" min="1" value="${item.qty}" style="width: 60px; margin-right: 10px;">
+                                     <button class="btn btn-sm btn-secondary" onclick="updateCartItem(${index})">Update</button>
+                                 </div>
+                             </td>
+                             <td>$${subtotal.toFixed(2)}</td>
+                             <td><button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">Remove</button></td>
+                         </tr>`;
+                }
+            });
+            document.getElementById('total').textContent = total.toFixed(2);
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function addToCart(id) {
+            const qtyInput = document.getElementById(`qty-${id}`);
+            const qty = parseInt(qtyInput.value);
+            if (qty < 1) {
+                alert('Quantity must be at least 1.');
+                return;
+            }
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += qty;
+            } else {
+                cart.push({ id, qty });
+            }
+            renderCart();
+            alert(`Added ${qty} item(s) to the cart!`);
+            qtyInput.value = 1; // Reset quantity after adding
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function updateCartItem(index) {
+            const qtyInput = document.getElementById(`cart-qty-${index}`);
+            const qty = parseInt(qtyInput.value);
+            if (qty < 1) {
+                alert('Quantity must be at least 1.');
+                qtyInput.value = cart[index].qty; // Revert to previous value
+                return;
+            }
+            cart[index].qty = qty;
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add products before checking out.');
+                return;
+            }
+            showPage('checkout'); // This now triggers generateReceipt inside showPage
+        }
+
+        function generateReceipt() {
+            const receiptBody = document.getElementById('receipt-body');
+            const receiptTotal = document.getElementById('receipt-total');
+            receiptBody.innerHTML = ''; // Clear previous receipt items
+            let total = 0;
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                 if (product) { // Check if product exists (safety)
+                     const subtotal = product.price * item.qty;
+                     total += subtotal;
+                     receiptBody.innerHTML += `
+                         <tr>
+                             <td>${product.name}</td>
+                             <td>${item.qty}</td>
+                             <td>$${subtotal.toFixed(2)}</td>
+                         </tr>`;
+                 }
+            });
+            receiptTotal.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        document.getElementById('signup-form')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            if (users.find(u => u.email === email)) {
+                alert('Email already exists!');
+            } else {
+                users.push({ name, email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Account created! You can now log in.');
+                showPage('login');
+            }
+        });
+
+        document.getElementById('login-form')?.addEventListener('submit', e => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const user = users.find(u => u.email === email);
+            if (user) {
+                if (user.password === password) {
+                    alert('Logged in successfully!');
+                    document.getElementById('main-navbar').classList.remove('hide');
+                    showPage('home');
+                } else {
+                    alert('Incorrect password.');
+                }
+            } else {
+                alert('User not found with this email.');
+            }
+        });
+
+        document.getElementById('checkout-form')?.addEventListener('submit', e => {
+            e.preventDefault();
+            // We generate the receipt when showing the checkout page now
+            // generateReceipt(); // Removed from here
+
+            document.getElementById('checkout-form').classList.add('hide');
+            document.getElementById('receipt-container').classList.remove('hide');
+            alert('Thank you for purchasing our products!');
+
+            // Clear the cart *after* the order is placed and receipt is shown
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart(); // Update the cart display (it will be empty)
+        });
+
+        document.querySelectorAll('a.nav-link, a.btn, .signup-link, .login-link').forEach(link => {
+            link.addEventListener('click', e => {
+                const target = link.getAttribute('href');
+                if (target.startsWith('#')) {
+                    e.preventDefault();
+                    showPage(target.substring(1));
+                    // Rendering functions are now called inside showPage
+                    // if (target === '#cart') renderCart(); // Removed
+                    // if (target === '#products') renderProducts(); // Removed
+                }
+            });
+        });
+
+        // Initial page load logic
+        showPage('login');
+        // renderProducts(); // Called inside showPage('login') -> then user navigates to products
+        // renderCart(); // Called inside showPage if the target is '#cart'
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
